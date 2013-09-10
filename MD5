@@ -1,0 +1,16 @@
+6fc4354510ad927474a32c71ddc737f9 *DESCRIPTION
+f2e68fca7266ffbceb7d860f5d2aa62e *NAMESPACE
+2d068b261ac05e33f062e30e0415d61f *R/design.R
+596c2236041ed35a67c311209429348f *R/getConstr.R
+dc9c8b152d8fb60d54648a7ce1ab6004 *R/ordBTL.R
+2a5c033d209b21336967c61269f31ec7 *R/wide2long.R
+b280256fb10fecaf7b8a4ca71b274d7d *data/CEMSwide.RData
+78af4acc675c83f095e64e5075823b32 *inst/REFERENCES.bib
+17419b41b14fbeee5bf10dc2e0a94004 *inst/examples/design_ex.R
+7546b72a5388af243a45190404061b9f *inst/examples/ordBTL_ex.R
+9e10e1b1f44ef453e0a0a623f67164f2 *inst/examples/wide2long_ex.R
+4e8617762689db6683554575d8ef6dcd *man/CEMSwide.Rd
+7c0677abf2031c82c204e84dee1fde05 *man/design.Rd
+7d20fb2910683beb08c247aaacc08e91 *man/getConstr.Rd
+6bbc4b289772296f6c7b16243d7e92dc *man/ordBTL.Rd
+248b83a437ac7c807d4f577a76d142c8 *man/wide2long.Rd
