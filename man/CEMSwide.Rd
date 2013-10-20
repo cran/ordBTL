@@ -43,9 +43,17 @@ where the responses (the first 15 variables) are coded as
 \source{
 The Royal Statistical Society Datasets Website (\url{http://www.blackwellpublishing.com/rss/Readmefiles/dittrich.htm})}
 \references{
-Dittrich, R., Hatzinger, R. and Katzenbeisser, W. (1998) Modelling the effect of subject-specific covariates in paired comparison studies with an application to university rankings. Applied Statistics 47, 511-525.
+  Dittrich R, Hatzinger R and Katzenbeisser W (1998).
+  "Modelling the effect of subject-specific
+  covariates in paired comparison studies with an
+  application to university rankings." _Applied Statistics_, *47*(2), pp. 511-525.
 
-Dittrich, R., Hatzinger, R. and Katzenbeisser, W. (2001) Corrigendum: Modelling the effect of subject-specific covariates in paired comparison studies with an application to university rankings. Applied Statistics 50, 247-249.
+  Dittrich R, Hatzinger R and Katzenbeisser W (2001).
+  "Corrigendum: Modelling the effect of subject-specific
+  covariates in paired comparison studies with an
+  application to university rankings." _Journal of the
+  Royal Statistical Society: Series C (Applied
+  Statistics)_, *50*(2), pp. 247-249.
 }
 \examples{
 data(CEMSwide)

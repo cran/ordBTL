@@ -7,11 +7,11 @@
 ##' @param formula a formula describing the model to be fitted.
 ##' @param data a data frame containing the design matrix for the model 
 ##' (See also \code{\link{design}} to generate such an design matrix).
-##' @param family a character specifying which ordinal model is to be fitted. 
+##' @param family a character specifying which ordinal BTL model should be fitted. 
 ##' Can be either \code{"cumulative"} for the cumulative link model or \code{"acat"} for the adjacent categories model.
 ##' @param family.control a list with arguments passed to the corresponding \code{family},
 ##' either \code{\link[VGAM]{cumulative}} for the cumulative link model or \code{\link[VGAM]{acat}} for the adjacent categories model.
-##' @param restrict a character vector specifying the variables from \code{formula} that should be fitted with a symmetry constraint.
+##' @param restrict (optional) a character vector specifying the covariates from \code{formula} that should be fitted with a symmetry constraint (can be used to fit threshold covariates).
 ##' @param ... further arguments for fitting function (currently either 
 ##' \code{\link[VGAM]{vglm}} or \code{\link[VGAM]{vgam}}).
 ##'

@@ -21,13 +21,13 @@ getConstr <- function(formula, data, restrict=NULL){
     }
     nthresholds <- length(levels(data[,response]))-1
   }
-  
-  if(length(grep("-1",gsub(" ", "", as.character(formula))))>0){
+  nointercept <- length(grep("-1",gsub(" ", "", as.character(formula))))>0
+  if(nointercept){
     constrVars <- getVars(formula, data)
-    constr <- vector("list", length(constrVars))
-    names(constr) <- constrVars
-    for(i in 1:length(constrVars)) constr[[i]] <- matrix(rep(1, nthresholds))
-    return(constr)
+    #constr <- vector("list", length(constrVars))
+    #names(constr) <- constrVars
+    #for(i in 1:length(constrVars)) constr[[i]] <- matrix(rep(1, nthresholds))
+    #return(constr)
   } else{
     constrVars <- getVars(formula, data)
     constrVars <- c("(Intercept)", constrVars)
@@ -40,8 +40,9 @@ getConstr <- function(formula, data, restrict=NULL){
   
   if(nthresholds%%2==0){
     matr <- diag(nthresholds/2)
-    constr[["(Intercept)"]] <- rbind(matr, apply(t(matr*-1),2,rev))
+    if(!nointercept) constr[["(Intercept)"]] <- rbind(matr, apply(t(matr*-1),2,rev))
     if(!is.null(restrict)){
+      restrict <- restrict[restrict%in%constrVars] # added 23.09.2013
       for(i in restrict) constr[[i]] <- rbind(matr, apply(t(matr*-1),2,rev))
     }
   } else{
@@ -51,9 +52,9 @@ getConstr <- function(formula, data, restrict=NULL){
     cols <- (nthresholds-1)/2
     matr1 <- diag(cols)
     matr2 <- diag(cols)*-1
-    constr[["(Intercept)"]] <- 
-      rbind(matr1, rep(0,times=cols), apply(t(matr2),2,rev))
+    if(!nointercept) constr[["(Intercept)"]] <- rbind(matr1, rep(0,times=cols), apply(t(matr2),2,rev))
       if(!is.null(restrict)){
+        restrict <- restrict[restrict%in%constrVars] # added 23.09.2013
         for(i in restrict) constr[[i]] <- 
           rbind(matr1, rep(0,times=cols), apply(t(matr2),2,rev))
       }

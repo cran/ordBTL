@@ -1,29 +1,31 @@
 ##' Design Matrix
 ##' 
-##' This function returns a data frame containing the design matrix for an ordinal
+##' This function returns the design matrix for an ordinal
 ##' Bradley-Terry-Luce model.
 ##' 
-##' @usage design(X, var1, var2, use.vars=NULL, reference=NULL, prefix="GAMMA", prefix.home="ALPHA", home.advantage=c("no","specific","yes"))
+##' @usage design(X, var1, var2, use.vars=NULL, reference=NULL, 
+##'               prefix="GAMMA", prefix.home="ALPHA", 
+##'               home.advantage=c("no","specific","yes"))
 ##' 
 ##' @param X a data frame in long format (see \code{\link{wide2long}}).
-##' @param var1 a character specifying the column name from \code{X} 
-##' that contains the first object that is compared.
-##' @param var2 a character specifying the column name from \code{X} 
-##' that contains the second object that is compared.
+##' @param var1 a character of the column name from \code{X} 
+##' specifying the first object to be compared (or, in sport context, the home team).
+##' @param var2 a character of the column name from \code{X} 
+##' specifying the second object to be compared (or, in sport context, the away team).
 ##' @param use.vars a character vector with the names of additional covariates 
-##' from \code{X} to be included into the design matrix. 
-##' (example: \code{use.vars = c("ENG", "SEX")}) if the variables \code{ENG} and \code{SEX} should be included. 
-##' If all covariates in the data should be included, you can use \code{use.vars = "ALL"}. 
+##' of \code{X} that will additionally be included into the design matrix. 
+##' (example: \code{use.vars = c("ENG", "SEX")}) if the covariates \code{ENG} and \code{SEX} should be included. 
+##' If all covariates of \code{X} should be included, you can use \code{use.vars = "ALL"}. 
 ##' The default is \code{use.vars = NULL} for no additional covariates.
 ##' @param reference a character specifying the reference object. 
-##' @param prefix a character that is used as prefix for the estimated object parameters 
-##' @param prefix.home a character that is used as prefix for the estimated home advantage parameters 
-##' @param home.advantage 
-##'  \code{home.advantage="no"} uses no home advantage parameters,
-##'  \code{home.advantage="specific"} uses one home advantage parameters for each object and
-##'  \code{home.advantage="yes"} uses one home advantage parameter for all objects.
+##' @param prefix (optional) a character added in the names of the estimated object parameters
+##' @param prefix.home (optional) a character added in the names of the estimated home advantage parameters 
+##' @param home.advantage Note that the home advantage is equivalent to an order effect
+##'  \code{home.advantage="no"} uses no home advantage (order effect),
+##'  \code{home.advantage="specific"} uses one home advantage (order effect) for each object and
+##'  \code{home.advantage="yes"} uses one home advantage (order effect) for any object.
 ##' 
-##' @return A data frame where each row represents a decision in a certain comparison for two objects.
+##' @return A data frame where each row refers to a pair comparison and each column corresponds to an object.
 ##' 
 ##' @author Giuseppe Casalicchio
 ##' 
@@ -52,10 +54,9 @@ design <-
     # Transformed dataset where 1: heimmannschaft, -1: gastmannschaft
     home.advantage <- match.arg(home.advantage)
     if(!is.null(use.vars)) {
-      if(use.vars=="ALL") 
+      if(length(use.vars) == 1 && use.vars=="ALL") 
         append <- subset(X, select=-c(get(var1),get(var2))) else{
-          append <- data.frame(X[, use.vars])
-          colnames(append) <- use.vars
+          append <- X[, use.vars, drop=FALSE]
         }
     } else append <- NULL
     if(!inherits(X[, var1], "factor") | 

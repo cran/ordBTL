@@ -13,9 +13,9 @@
   the model (See also \code{\link{design}} to generate such
   an design matrix).}
 
-  \item{family}{a character specifying which ordinal model
-  is to be fitted. Can be either \code{"cumulative"} for
-  the cumulative link model or \code{"acat"} for the
+  \item{family}{a character specifying which ordinal BTL
+  model should be fitted. Can be either \code{"cumulative"}
+  for the cumulative link model or \code{"acat"} for the
   adjacent categories model.}
 
   \item{family.control}{a list with arguments passed to the
@@ -24,9 +24,10 @@
   model or \code{\link[VGAM]{acat}} for the adjacent
   categories model.}
 
-  \item{restrict}{a character vector specifying the
-  variables from \code{formula} that should be fitted with
-  a symmetry constraint.}
+  \item{restrict}{(optional) a character vector specifying
+  the covariates from \code{formula} that should be fitted
+  with a symmetry constraint (can be used to fit threshold
+  covariates).}
 
   \item{...}{further arguments for fitting function
   (currently either \code{\link[VGAM]{vglm}} or
@@ -46,7 +47,7 @@
 \examples{
 ############################################################
 ##                                                        ##
-## Example 1: Adjacent categories model with CEMS data    ##
+## Example 1: Adjacent categories logit model for CEMS    ##
 ##                                                        ##
 ############################################################
 
@@ -67,8 +68,7 @@ mod1 <- ordBTL(Y~., data=des1, family="acat",
 # We get the same results from Table 3 of Dittrich et al (2001).
 # Since Stockholm is the reference university, its estimate 
 # is set to zero (due to identifiability)
-coefs1 <- summary(mod1)@coef3
-coefs1[order(coefs1[,"Estimate"], decreasing=TRUE),]
+getRank(mod1)
 
 ############################################################
 # Reproduce results from Table 6 of Dittrich et al. (2001)
@@ -94,51 +94,38 @@ mod2 <- ordBTL(form2, data=des2, family="acat",
                restrict=c("WOR", "SEX"))
 
 # We get the same results from Table 6 of Dittrich et al. (2001)
-coefs2 <- summary(mod2)@coef3
-coefs2[order(coefs2[,"Estimate"], decreasing=TRUE),]
+getRank(mod2)
 
 # Notice that the change in sign for (Intercept), WOR and SEX
 # is because we use here a different "coding".
 
 ############################################################
 ##                                                        ##
-## Example 2: Various models from Agresti (1992)          ##
+## Example 2: Fitting models from Agresti (1992)          ##
 ##                                                        ##
 ############################################################
 
 # Data from Table 1 of Agresti (1992)
-ribbon <- as.data.frame(matrix(c(4,4,0,5,5,8,4,
-                                 5,12,4,6,0,2,1,
-                                 0,2,2,2,5,15,4,
-                                 4,4,5,4,2,8,3,
-                                 6,9,3,4,1,4,3,
-                                 2,4,1,6,4,8,5,
-                                 5,5,6,6,1,4,3,
-                                 0,1,0,3,1,13,12,
-                                 1,6,3,4,3,11,2,
-                                 6,12,5,3,1,3,0), ncol=7, byrow=TRUE))
-ribbon$obj2 <- c(1,1,1,1,2,2,2,3,3,4)
-ribbon$obj1 <- c(2,3,4,5,3,4,5,4,5,5)
-head(ribbon)
+data(ribbon)
 
 # design matrix 
 des3 <- design(ribbon, var1="obj1", var2="obj2", use.vars="ALL")
 
-# Agresti (1992) uses the constraint that the object parameters 
-# add up to 1. Since we constrain only one object parameter to be 
-# equal to 0, we have to reparametrize the model formula as follows:
+# Note that Agresti (1992) used the constraint that the object 
+# parameters sum up to 1. To get the same results, we use the model
 form3 <- cbind(V1,V2,V3,V4,V5,V6,V7)~I(GAMMA.1-GAMMA.5)+
   I(GAMMA.2-GAMMA.5)+I(GAMMA.3-GAMMA.5)+I(GAMMA.4-GAMMA.5)
 
-# Fit an adjacent categories logit model
+# Fit the adjacent categories logit model
 ac <- ordBTL(form3, data=des3, family="acat", 
-              family.control=list(reverse=TRUE))
+             family.control=list(reverse=TRUE))
 
-# Fit a cumulative logit model
+# Fit the cumulative logit model
 clm.logit <- ordBTL(form3, data=des3)
 
-# Fit a cumulative probit model
-clm.probit <- ordBTL(form3, data=des3, family.control=list(link="probit"))
+# Fit the cumulative probit model
+clm.probit <- ordBTL(form3, data=des3,
+                     family.control=list(link="probit"))
 
 # Parameter estimates
 coefs <- t(rbind("Adjacent categories logit"=coefficients(ac), 
@@ -146,6 +133,46 @@ coefs <- t(rbind("Adjacent categories logit"=coefficients(ac),
                  "Cumulative logit"=coefficients(clm.logit)))
 coefs <- rbind(coefs, "GAMMA.5"=0-colSums(coefs[4:7,]))
 coefs
+
+
+############################################################
+##                                                        ##
+## Example 3: Fitting models for Bundesliga 2005/2006     ##
+##                                                        ##
+############################################################
+# real ranking can be obtained from:
+# http://fussballdaten.sport.de/bundesliga/2006
+
+# load data
+example(design, package="ordBTL", echo=FALSE)
+
+# Model without home advantage
+des.nohome <- design(buli0506, var1="Heim", var2="Gast", 
+                     use.vars="Y3", home.advantage="no", 
+                     reference="GAMMA.MSV.Duisburg")
+mod.nohome <- ordBTL(Y3~., data=des.nohome)
+# team 'abilities' (should be approximately the ranking of the final standings)
+getRank(mod.nohome, prefix="GAMMA", reference="GAMMA.MSV.Duisburg")
+
+# Model with home advantage
+des.onehome <- design(buli0506, var1="Heim", var2="Gast",
+                      use.vars="Y3", home.advantage="yes", 
+                      reference="GAMMA.MSV.Duisburg")
+mod.onehome <- ordBTL(Y3~., data=des.onehome)
+# team 'abilities'
+getRank(mod.onehome, prefix="GAMMA", reference="GAMMA.MSV.Duisburg")
+# home advantage
+getRank(mod.onehome, prefix="ALPHA")
+
+# Model with team-specific home advantage
+des.teamhome <- design(buli0506, var1="Heim", var2="Gast",
+                      use.vars="Y3", home.advantage="specific", 
+                      reference="GAMMA.MSV.Duisburg")
+mod.teamhome <- ordBTL(Y3~., data=des.teamhome)
+# team 'abilities' (should be approximately the ranking for the away table)
+getRank(mod.teamhome, prefix="GAMMA", reference="GAMMA.MSV.Duisburg")
+# team-specific home advantages
+getRank(mod.teamhome, prefix="ALPHA")
 }
 \author{
   Giuseppe Casalicchio

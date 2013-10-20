@@ -1,3 +1,4 @@
 export(design)
+export(getRank)
 export(ordBTL)
 export(wide2long)
